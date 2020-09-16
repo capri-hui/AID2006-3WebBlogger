@@ -29,7 +29,7 @@ def register_view(request):
         sha2.update(password_1.encode())
         password_h = sha2.hexdigest()
         try:
-            user = User.objects.create(nickname=nickname, password=password_h, mailbox=mailbox)
+            user = User.objects.create(nickname=nickname.replace(' ', ''), password=password_h, mailbox=mailbox)
         except Exception as e:
             print(f'Error is {e}.')
             return HttpResponse('该用户已存在!')
@@ -76,4 +76,14 @@ def login_view(request):
 
 
 def logout_view(request):
-    pass
+    # cookies和session都清除掉
+    if 'username' in request.session:
+        del request.session['username']
+    if 'userid' in request.session:
+        del request.session['userid']
+    response = HttpResponse('已成功退出!')
+    if 'username' in request.COOKIES:
+        response.delete_cookie('username')
+    if 'userid' in request.COOKIES:
+        response.delete_cookie('userid')
+    return response
