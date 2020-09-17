@@ -1,10 +1,11 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from .models import User
+from user.models import User
 import hashlib
 
 
 # Create your views here.
+# 注册视图
 def register_view(request):
     if request.method == 'GET':
         return render(request, 'user/register.html')
@@ -36,6 +37,7 @@ def register_view(request):
         return HttpResponse('注册成功,欢迎使用!')
 
 
+# 登录视图
 def login_view(request):
     if request.method == 'GET':
         # 登录检查
@@ -75,6 +77,7 @@ def login_view(request):
         return response
 
 
+# 退出视图
 def logout_view(request):
     # cookies和session都清除掉
     if 'username' in request.session:
@@ -87,3 +90,57 @@ def logout_view(request):
     if 'userid' in request.COOKIES:
         response.delete_cookie('userid')
     return response
+
+
+def login_check(fn):
+    def wrap(request, *args, **kwargs):
+        # 首先检查session
+        if 'username' not in request.session or 'userid' not in request.session:
+            # 然后检查cookies
+            c_username = request.COOKIES.get('username')
+            c_userid = request.COOKIES.get('userid')
+            if not c_username or not c_userid:
+                # 跳转到登录页面
+                return HttpResponseRedirect('/user/login')
+            else:
+                request.session['username'] = c_username
+                request.session['userid'] = c_userid
+        return fn(request, *args, **kwargs)
+
+    return wrap
+
+
+# 修改个人信息视图
+# 登录检查
+@login_check
+def person_info_view(request):
+    if request.method == 'GET':
+        return render(request, 'user/change_info.html')
+    elif request.method == 'POST':
+        real_name = request.POST['real_name']
+        birthday = request.POST['birthday']
+        gender = request.POST['gender']
+        motto = request.POST['motto']
+        QQ_number = request.POST['QQ_number']
+        profession = request.POST['profession']
+        school = request.POST['school']
+        user = User.objects.create(
+            real_name=real_name,
+            birthday=birthday,
+            gender=gender,
+            motto=motto,
+            QQ_number=QQ_number,
+            profession=profession,
+            school=school,
+        )
+    return HttpResponse('个人信息修改成功!')
+
+
+@login_check
+# 上传头像
+def avatar_view(request):
+    if request.method == 'GET':
+        return render(request, 'user/avatar.html')
+    elif request.method == 'POST':
+        pass
+        return HttpResponse('上传成功!')
