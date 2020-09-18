@@ -117,23 +117,18 @@ def person_info_view(request):
     if request.method == 'GET':
         return render(request, 'user/change_info.html')
     elif request.method == 'POST':
-        real_name = request.POST['real_name']
-        birthday = request.POST['birthday']
-        gender = request.POST['gender']
-        motto = request.POST['motto']
-        QQ_number = request.POST['QQ_number']
-        profession = request.POST['profession']
-        school = request.POST['school']
-        user = User.objects.create(
-            real_name=real_name,
-            birthday=birthday,
-            gender=gender,
-            motto=motto,
-            QQ_number=QQ_number,
-            profession=profession,
-            school=school,
-        )
-    return HttpResponse('个人信息修改成功!')
+        userid = request.session['userid']
+        now_user = User.objects.get(id=userid)
+        now_user.real_name = request.POST['real_name']
+        now_user.birthday = request.POST['birthday']
+        now_user.gender = request.POST['gender']
+        now_user.motto = request.POST['motto']
+        now_user.QQ_number = request.POST['QQ_number']
+        now_user.profession = request.POST['profession']
+        now_user.school = request.POST['school']
+        now_user.tel = request.POST['phone_number']
+        now_user.save()
+        return HttpResponse('个人信息修改成功!')
 
 
 @login_check
@@ -142,5 +137,8 @@ def avatar_view(request):
     if request.method == 'GET':
         return render(request, 'user/avatar.html')
     elif request.method == 'POST':
-        pass
+        userid = request.session['userid']
+        now_user = User.objects.get(id=userid)
+        now_user.avatar = request.FILES['avatar']
+        now_user.save()
         return HttpResponse('上传成功!')
