@@ -21,6 +21,7 @@ def login_check(fn):
 
     return wrap
 
+
 # 登录检查
 @login_check
 def send_microblog_view(request):
