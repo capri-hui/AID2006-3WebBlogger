@@ -8,8 +8,9 @@ class User(models.Model):
     mailbox = models.EmailField('邮箱', max_length=20)
     created_time = models.DateTimeField('注册时间', auto_now_add=True)
     real_name = models.CharField('真实姓名', max_length=50)
-    birthday = models.DateField('生日',auto_now_add=True)
-    avatar = models.ImageField('头像', upload_to='avatar', default='')
+    birthday = models.DateField('生日', auto_now_add=True)
+    avatar = models.ImageField('头像', width_field=250, height_field=250,
+                               upload_to='avatar', default='')
     gender = models.CharField('性别', max_length=5)
     motto = models.TextField('个性签名')
     QQ_number = models.CharField('QQ', max_length=15)

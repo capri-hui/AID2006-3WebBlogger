@@ -15,11 +15,11 @@ class Blog(models.Model):
     # 用户ID
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     # 被评论次数
-    remarked_times = models.IntegerField('被评论次数')
+    remarked_times = models.IntegerField('被评论次数', default=0)
     # 被点赞次数
-    liked_time = models.IntegerField('被点赞次数')
+    liked_time = models.IntegerField('被点赞次数', default=0)
     # 插入图片
-    pictures = models.ImageField('图片')
+    pictures = models.ImageField('图片', upload_to='pictures')
 
     def __str__(self):
         return self.title

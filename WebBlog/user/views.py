@@ -113,9 +113,9 @@ def login_check(fn):
 # 修改个人信息视图
 # 登录检查
 @login_check
-def person_info_view(request):
+def update_person_info_view(request):
     if request.method == 'GET':
-        return render(request, 'user/change_info.html')
+        return render(request, 'user/update_person_info.html')
     elif request.method == 'POST':
         userid = request.session['userid']
         now_user = User.objects.get(id=userid)
