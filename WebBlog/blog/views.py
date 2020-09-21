@@ -21,7 +21,7 @@ def login_check(fn):
 
     return wrap
 
-
+# 登录检查
 @login_check
 def send_microblog_view(request):
     if request.method == 'GET':
@@ -31,5 +31,7 @@ def send_microblog_view(request):
         content = request.POST.get('content', '')
         pictures = request.FILES.get('pictures')
         userid = request.session['userid']
+        if not title and not content and not pictures:
+            return HttpResponse('请输入内容！')
         Blog.objects.create(title=title, content=content, pictures=pictures, user_id=userid)
         return HttpResponse('发表成功！')
