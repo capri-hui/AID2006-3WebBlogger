@@ -142,3 +142,42 @@ def avatar_view(request):
         now_user.avatar = request.FILES['avatar']
         now_user.save()
         return HttpResponse('上传成功!')
+
+
+# 忘记密码
+def forget_password_view(request):
+    if request.method == 'GET':
+        return render(request, 'user/forget_password.html')
+    elif request.method == 'POST':
+        nickname = request.POST.get('username')
+        mailbox = request.POST.get('mailbox')
+        now_user = User.objects.filter(nickname=nickname)
+        if now_user:
+            user = User.objects.filter(nickname=nickname)
+            if user.mailbox == mailbox:
+                request.session['username'] = nickname
+                return render(request, 'user/reset_password.html')
+            else:
+                return render(request, 'user/forget_password.html', {'Error': '您的用户名和邮箱不匹配！'})
+        else:
+            return render(request, 'user/forget_password.html', {'Error': '该用户名不存在，请输入正确的用户名！'})
+
+
+# 重置密码
+def reset_password_view(request):
+    if request.method == 'GET':
+        return render(request, 'user/reset_password.html')
+    elif request.method == 'POST':
+        nickname = request.session['username']
+        user = User.objects.get(nickname=nickname)
+        password_1 = request.POST['password_1']
+        password_2 = request.POST['password_2']
+        if password_1 == password_2:
+            sha2 = hashlib.sha256()
+            sha2.update(password_1.encode())
+            password_h = sha2.hexdigest()
+            user.password = password_h
+            user.save()
+            return render(request, 'user/login.html')
+        else:
+            return render(request, 'user/reset_password.html', {'Error': '两次密码输入不一致！'})
